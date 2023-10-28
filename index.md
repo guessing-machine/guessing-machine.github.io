@@ -1,2 +1,2 @@
-Guessing Machine
-[Page 1](./pages/page_1
+# Guessing Machine
+[Page 1](./pages/page_1)
