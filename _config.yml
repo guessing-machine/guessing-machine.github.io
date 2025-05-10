@@ -7,5 +7,5 @@ include:
   - README.md
   - LICENSE.md
 
-title: Site Name
-description: This is a brief description of the site
+title: Guessing Machine
+description: A machine that does guessing.
