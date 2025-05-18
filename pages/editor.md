@@ -7,4 +7,3 @@ title: Text Editor Includes
 
 {% include lib/editor-styles.html %}
 {% include lib/editor-script.html %}
-
