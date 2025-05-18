@@ -3,100 +3,107 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Text Editor - Guessing Machine</title>
-  <link rel="stylesheet" href="https://primer.style/css/primer.css">
+  <title>Text Editor</title>
   <style>
-    /* Custom styles for the text editor */
-    .text-editor-container {
-      max-width: 980px;
-      margin: 0 auto;
-      padding: 2rem 1rem;
-    }
-
-    .text-editor {
+    .editor-container {
       width: 100%;
-      min-height: 300px;
-      border: none;
-      resize: none;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      max-width: 100%;
+      margin: 0;
+      padding: 16px;
+      background-color: #fff;
+      border: 1px solid #d1d5da;
+      border-radius: 6px;
+      min-height: 200px;
+      outline: none;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
       font-size: 16px;
       line-height: 1.5;
-      color: #24292e;
-      background: transparent;
-      outline: none;
-      padding: 0;
+      white-space: pre-wrap;
+      word-wrap: break-word;
     }
-
-    .text-editor:focus {
-      outline: none;
-      box-shadow: none;
+    .editor-container:focus {
+      border-color: #0366d6;
+      box-shadow: 0 0 0 3px rgba(3, 102, 214, 0.3);
     }
-
+    .editor-container[contenteditable="true"]:empty:before {
+      content: attr(placeholder);
+      color: #6a737d;
+    }
     .status-message {
+      margin-top: 8px;
       font-size: 14px;
       color: #6a737d;
-      margin-top: 0.5rem;
-      display: none;
-    }
-
-    .status-message.visible {
-      display: block;
     }
   </style>
 </head>
 <body>
-  <header class="Header">
-    <div class="Header-item">
-      <a href="/" class="Header-link f4 d-flex flex-items-center">
-        Guessing Machine
-      </a>
-    </div>
-  </header>
-
-  <main class="container-md px-3 my-5">
-    <div class="text-editor-container">
-      <textarea class="text-editor" placeholder="Start typing your text here..."></textarea>
-      <div class="status-message" id="status">Saved</div>
-    </div>
-  </main>
-
+  <div class="container-md px-3 my-5">
+    <div class="editor-container" contenteditable="true" placeholder="Start typing here..."></div>
+    <div class="status-message" id="status">Autosaved</div>
+  </div>
   <script>
-    const textarea = document.querySelector('.text-editor');
+    const editor = document.querySelector('.editor-container');
     const status = document.querySelector('#status');
-    let typingTimer;
     const AUTO_SAVE_DELAY = 3000; // 3 seconds of inactivity
+    let saveTimeout = null;
 
-    // Restore text from localStorage on page load
-    window.addEventListener('load', () => {
-      const savedText = localStorage.getItem('editorText');
-      if (savedText) {
-        textarea.value = savedText;
+    // Preload Lorem Ipsum or saved text
+    const defaultText = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+
+Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.`;
+    const savedText = localStorage.getItem('editorContent');
+    editor.textContent = savedText || defaultText;
+
+    // Set cursor to end of text
+    const range = document.createRange();
+    const selection = window.getSelection();
+    range.selectNodeContents(editor);
+    range.collapse(false);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    editor.focus();
+
+    // Handle Enter and Shift+Enter
+    editor.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        // Regular Enter: Insert line break
+        document.execCommand('insertLineBreak');
+        e.preventDefault();
+      } else if (e.key === 'Enter' && e.shiftKey) {
+        // Shift+Enter: Complete editing
+        editor.blur();
+        saveContent();
+        showStatus('Editing completed and saved');
+        e.preventDefault();
       }
     });
 
-    // Auto-save to localStorage after inactivity
-    textarea.addEventListener('input', () => {
-      clearTimeout(typingTimer);
-      typingTimer = setTimeout(() => {
-        localStorage.setItem('editorText', textarea.value);
-        status.classList.add('visible');
-        setTimeout(() => status.classList.remove('visible'), 2000);
+    // Auto-save on input after inactivity
+    editor.addEventListener('input', () => {
+      clearTimeout(saveTimeout);
+      saveTimeout = setTimeout(() => {
+        saveContent();
+        showStatus('Autosaved');
       }, AUTO_SAVE_DELAY);
     });
 
-    // Handle Shift+Enter for completion
-    textarea.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && e.shiftKey) {
-        e.preventDefault();
-        // Trigger completion (e.g., clear textarea or save final text)
-        localStorage.setItem('editorText', textarea.value);
-        textarea.value = ''; // Clear textarea as completion action
-        localStorage.removeItem('editorText'); // Clear localStorage
-        status.textContent = 'Text completed and cleared';
-        status.classList.add('visible');
-        setTimeout(() => status.classList.remove('visible'), 2000);
-      }
+    // Prevent unwanted formatting
+    editor.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+      document.execCommand('insertText', false, text);
     });
+
+    function saveContent() {
+      localStorage.setItem('editorContent', editor.textContent);
+    }
+
+    function showStatus(message) {
+      status.textContent = message;
+      setTimeout(() => {
+        status.textContent = 'Autosaved';
+      }, 2000);
+    }
   </script>
 </body>
 </html>
