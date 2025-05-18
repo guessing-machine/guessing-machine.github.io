@@ -1,7 +1,6 @@
 ---
 layout: page
 title: Text Editor
-permalink: /editor/
 ---
 
 <div id="text-editor" class="container-md px-3 my-5" contenteditable="true"></div>
