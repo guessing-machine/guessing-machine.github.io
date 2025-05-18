@@ -1,10 +1,12 @@
 ---
 layout: page
-title: Guessing Machine
+title: Text Editor
 permalink: /editor/
 ---
 
+<div id="text-editor" class="container-md px-3 my-5" contenteditable="true"></div>
 
+<style>
 #text-editor {
   outline: none;
   border: none;
@@ -18,9 +20,9 @@ permalink: /editor/
 #text-editor:empty:before {
   content: '';
 }
+</style>
 
-
-
+<script>
 const editor = document.getElementById('text-editor');
 const STORAGE_KEY = 'savedText';
 const AUTO_SAVE_DELAY = 5000; // 5 seconds of inactivity
@@ -83,3 +85,4 @@ editor.addEventListener('paste', (e) => {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', loadText);
+</script>
