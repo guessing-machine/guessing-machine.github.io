@@ -1,6 +1,7 @@
 ---
 layout: page
 title: Text Editor
+permalink: /editor/
 ---
 
 <div id="text-editor" class="container-md px-3 my-5" contenteditable="true"></div>
@@ -35,7 +36,7 @@ Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu 
 // Load saved text or default text
 function loadText() {
   const savedText = localStorage.getItem(STORAGE_KEY);
-  editor.innerText = savedText || defaultText;
+  editor.textContent = savedText || defaultText;
   placeCursorAtEnd();
 }
 
@@ -52,7 +53,7 @@ function placeCursorAtEnd() {
 
 // Save text to local storage
 function saveText() {
-  localStorage.setItem(STORAGE_KEY, editor.innerText);
+  localStorage.setItem(STORAGE_KEY, editor.textContent);
 }
 
 // Auto-save after inactivity
