@@ -1,6 +1,8 @@
-
-layout: pagetitle: Text Editorpermalink: /editor/
-
+---
+layout: page
+title: Guessing Machine
+permalink: /editor/
+---
 
 
 #text-editor {
